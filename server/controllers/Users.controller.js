@@ -3,7 +3,7 @@ const {sign} = require("jsonwebtoken")
 
 const logIn = (req,res) =>{
        console.log(req.body)
-    Users.findOne({Where:{email: req.email}}).then((results) =>{
+    Users.findOne({where: {email: req.body.email}}).then((results) =>{
                if(!results){
                 return res.status(404).json({
                     success: 0,
@@ -17,7 +17,13 @@ const logIn = (req,res) =>{
                     token: jsontoken,
                     results: results
                 })
-               }
+               }else {
+                return res.status(401).json({
+                    success: 0,
+                    message: "invalid id or password"
+                });
+            }
+               
     })
 }
 module.exports ={logIn}
