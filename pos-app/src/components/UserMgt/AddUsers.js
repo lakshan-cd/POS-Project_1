@@ -13,8 +13,6 @@ export default function AddUsers() {
         <Sidenav userRole="storekeeper" />
         <div className="others">
           <UserForm />
-
-          {/* <Table /> */}
         </div>
       </div>
     </>

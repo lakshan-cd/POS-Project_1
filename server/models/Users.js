@@ -22,7 +22,7 @@ module.exports = (Sequelize, DataTypes) => {
     },
 
     user_role: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM("storekeeper", "cashier", "admin"),
       allowNull: false,
     },
 
@@ -30,6 +30,15 @@ module.exports = (Sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+    },
+
+    token: {
+      type: DataTypes.STRING,
+      required: true,
+    },
+
+    verifytoken: {
+      type: DataTypes.STRING,
     },
   });
 

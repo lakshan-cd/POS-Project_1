@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const { Users } = require("../models");
-const {logIn} = require("../controllers/Users.controller")
+const { logIn } = require("../controllers/Users.controller");
+const { register } = require("../controllers/Users.controller");
+const { sendEmail } = require("../controllers/Users.controller");
+
+const { resetPassword } = require("../controllers/Users.controller");
 // router.get("/", async (rea, res) => {
 //   const listofUsers = await Users.findAll();
 //   res.json(listofUsers);
@@ -16,9 +20,11 @@ router.post("/", async (req, res) => {
   await Users.create(post);
   res.json(post);
 });
-
-router.post("/login",logIn)
-
+//login route
+router.post("/login", logIn);
+router.post("/register", register);
+router.post("/sendEmail", sendEmail);
+router.post("/reset/:id/:token", resetPassword);
 // router.post();
 
 module.exports = router;

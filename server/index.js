@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const {Users} = require("./models")
+const { Users } = require("./models");
 
 app.use(express.json());
 app.use(cors());

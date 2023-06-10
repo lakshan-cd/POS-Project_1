@@ -1,63 +1,45 @@
 import React, { useState, state, Component, props } from "react";
-import { ReactDOM } from "react-dom";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-
+import Swal from "sweetalert2";
 const Login = () => {
-  const navigate = useNavigate();
+  const history = useNavigate();
+  const [email, setEmail] = useState("");
+  const [user_password, setPassword] = useState("");
 
-  //  handleSubmit = (e) => {
-  //     e.preventDefault();
-  //     console.log(this.state.email)
-  //     console.log(this.state.password)
-  // // const handleSubmit = (e) => {
-  // //     e.preventDefault();
-  // //     console.log(this.state.email)
-  // //     console.log(this.state.password)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  //     if(this.state.email == "fazlulsalama@gmail.com" && this.state.password == 123){
-  //         const mes = "Welcome Salama"
-  //         alert(mes);
-  // //     if(this.state.email == "fazlulsalama@gmail.com" && this.state.password == 123){
-  // //         const mes = "Welcome Salama"
-  // //         alert(mes);
-
-  //     }
-  // //     }
-
-  // }
-  // // }
-
-  //  changeHandler = (c) => {
-  // //  const changeHandler = (c) => {
-
-  //     const name = c.target.name;
-  //     const value = c.target.value;
-  // //     const name = c.target.name;
-  // //     const value = c.target.value;
-
-  //     this.setState({
-  //       [name] : value,
-  // //     this.setState({
-  // //       [name] : value,
-
-  //     });
-  // }
-
-  //     });
-  // }
-
-  /*
-const [email, setEmail]         = State('');
-const [password, setPassword]   = State('');
-const [errMsg, setErrMsg]       = State('');
-const [success, setSuccess]     = State('');
-*/
-  /*
-this.state = {
-    email :''
-};*/
-
+    try {
+      const response = await axios.post("http://localhost:3001/users/login", {
+        email,
+        user_password,
+      });
+      // Handle successful login
+      console.log(response);
+      if (response.status === 200) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          text: "Login Successfully",
+          showConfirmButton: false,
+          timer: 1200,
+          width: "250px",
+        });
+        if (response.data.results.user_role === "admin") {
+          history("/AddUsers");
+        } else if (response.data.results.user_role === "storekeeper") {
+          history("/storekeeper");
+        } else if (response.data.results.user_role === "cashier") {
+          history("/Cashier");
+        }
+      }
+    } catch (error) {
+      // Handle login error
+      console.error(error);
+    }
+  };
   return (
     <>
       <div className="split logo1">
@@ -78,27 +60,27 @@ this.state = {
           <form className="login-form">
             {" "}
             {/*onSubmit={this.handleSubmit} */}
-            <label htmlfor="email">Username</label>
+            <label htmlfor="email">Email</label>
             <input
-              type="text"
-              placeholder="Enter your username"
-              id="user_name"
-              name="user_name"
+              type="email"
+              placeholder="Enter your Email Address"
+              id="email"
+              name="email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             ></input>
             <label htmlfor="password">password</label>
             <input
               type="password"
-              placeholder="****"
+              placeholder="Enter your password"
               id="password"
               name="password"
               required
+              value={user_password}
+              onChange={(e) => setPassword(e.target.value)}
             ></input>
-            <button
-              className="sign"
-              type="submit"
-              onClick={() => navigate("AddUsers")}
-            >
+            <button className="sign" type="submit" onClick={handleSubmit}>
               Login
             </button>
           </form>

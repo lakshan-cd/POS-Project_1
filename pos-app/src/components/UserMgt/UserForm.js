@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import "./UserForm.css";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 
 function UserForm() {
+  const [fullName, setFullName] = useState("");
+  const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [userRole, setUserRole] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/users/register",
+        {
+          full_name: fullName,
+          address,
+          email,
+          mobile_no: mobileNo,
+          user_password: userPassword,
+          user_role: userRole,
+        }
+      );
+
+      console.log(response.data); // Handle the response data as needed
+    } catch (error) {
+      console.error(error); // Handle the error as needed
+    }
+  };
   const initialValues = {
     full_name: "",
     address: "",
@@ -41,7 +69,13 @@ function UserForm() {
         <Form className="form">
           <div className="formTopic">Add user</div>
           <label className="lable">Employee Name</label>
-          <Field className="input01" id="inputCreateUsers" name="full_name" />
+          <Field
+            className="input01"
+            id="inputCreateUsers"
+            name="full_name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
           <ErrorMessage
             className="Error"
             name="full_name"
@@ -50,7 +84,13 @@ function UserForm() {
           />
 
           <label className="lable">Address</label>
-          <Field className="input01" id="inputCreateUsers" name="address" />
+          <Field
+            className="input01"
+            id="inputCreateUsers"
+            name="address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
           <ErrorMessage
             className="Error"
             name="address"
@@ -59,7 +99,13 @@ function UserForm() {
           />
 
           <label className="lable">Email</label>
-          <Field className="input01" id="inputCreateUsers" name="email" />
+          <Field
+            className="input01"
+            id="inputCreateUsers"
+            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
           <ErrorMessage
             className="Error"
             name="email"
@@ -68,7 +114,13 @@ function UserForm() {
           />
 
           <label className="lable">Mobile No</label>
-          <Field className="input01" id="inputCreateUsers" name="mobile_no" />
+          <Field
+            className="input01"
+            id="inputCreateUsers"
+            name="mobile_no"
+            value={mobileNo}
+            onChange={(e) => setMobileNo(e.target.value)}
+          />
           <ErrorMessage
             className="Error"
             name="mobile_no"
@@ -82,10 +134,12 @@ function UserForm() {
             className="dropDown01"
             id="inputCreateUsers"
             name="user_role"
+            value={userRole}
+            onChange={(e) => setUserRole(e.target.value)}
           >
-            <option value="">Select a User Role</option>
-            <option value="storekeeper">Storekeeper</option>
+            <option value="">Select User Role</option>
             <option value="cashier">Cashier</option>
+            <option value="storekeeper">Storekeeper</option>
           </Field>
           <ErrorMessage
             className="Error"
@@ -100,6 +154,8 @@ function UserForm() {
             id="inputCreateUsers"
             name="user_password"
             type="password"
+            value={userPassword}
+            onChange={(e) => setUserPassword(e.target.value)}
           />
           <ErrorMessage
             className="Error"
@@ -107,7 +163,7 @@ function UserForm() {
             component="span"
             style={{ display: "block" }}
           />
-          <button className="Addbutton" type="submit">
+          <button className="Addbutton" type="submit" onClick={handleSubmit}>
             Add
           </button>
           <button className="Clearbutton" type="reset">
