@@ -1,66 +1,69 @@
-import React, { useState, state, Component, props, useParams } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./ResetPassword.css";
+
 import Swal from "sweetalert2";
+
 const ResetPassword = () => {
   const { userId, resetToken } = useParams();
   const history = useNavigate();
-  const [user_password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const newPassword = "newPassword123"; // Replace with the user's new password
-      const response = await axios.post(`/api/reset/${userId}/${resetToken}`, {
-        password: newPassword,
+      if (password !== confirmPassword) {
+        // Password and confirm password do not match
+        Swal.fire("Error", "Passwords do not match", "error");
+        return;
+      }
+
+      const response = await axios.get(`/api/reset/${userId}/${resetToken}`, {
+        user_password: password,
       });
       const data = response.data;
+      console.log(data);
       // Handle the response from the API
       // Display success or error message to the user
     } catch (error) {
+      console.log(error);
       // Handle the error
     }
   };
+
   return (
     <>
-      <div className="split logo1">
-        <div className="centered">
-          <img src={require("../images/logo1.png")} />
-          <p className="p1">
-            <b> WELCOME !</b>
-          </p>
-          <p className="p2"> BY TECH POS SOLUTION </p>
-          <p className="p3"> Our technology creates your excellence </p>
-        </div>
-      </div>
+      <div className="split logo1">{/* Rest of the code */}</div>
 
       <div className="split App">
         <div className="auth-form-container">
           <h1>Reset Password</h1>
 
-          <form className="login-form">
-            {" "}
-            {/*onSubmit={this.handleSubmit} */}
-            <label htmlfor="password">Enter new password</label>
+          <form className="login-form" onSubmit={handleSubmit}>
+            <label htmlFor="password">Enter new password</label>
             <input
               type="password"
               placeholder="Enter your password"
               id="password"
               name="password"
               required
-              value={user_password}
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
-            ></input>
-            <label htmlfor="password">Confirm password</label>
+            />
+
+            <label htmlFor="confirmPassword">Confirm password</label>
             <input
               type="password"
-              placeholder="Enter your password"
-              id="password"
-              name="password"
+              placeholder="Confirm your password"
+              id="confirmPassword"
+              name="confirmPassword"
               required
-              value={user_password}
-              onChange={(e) => setPassword(e.target.value)}
-            ></input>
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+
             <button className="sign" type="submit">
               Submit
             </button>

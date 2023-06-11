@@ -5,37 +5,47 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const keysecret = process.env.SECRET;
-const logIn = (req, res) => {
-  //value check
 
-  Users.findOne({
-    where: { email: req.body.email },
-  }).then((results) => {
-    if (!results) {
+const logIn = async (req, res) => {
+  try {
+    const user = await Users.findOne({
+      where: { email: req.body.email },
+    });
+
+    if (!user) {
       return res.status(404).json({
         success: 0,
         message: "User Not Found",
       });
-    } else if (results.user_password === req.body.user_password) {
-      results.user_password = undefined;
-      //token created
-      const jsontoken = sign({ result: results }, "pos@1234", {
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      req.body.user_password,
+      user.user_password
+    );
+
+    if (isPasswordValid) {
+      user.user_password = undefined;
+      // Generate token
+      const token = sign({ result: user }, "pos@1234", {
         expiresIn: "3h",
       });
-      //response
+      // Respond with token and user data
       return res.status(200).json({
         success: 1,
-        token: jsontoken,
-        results: results,
+        token: token,
+        results: user,
       });
     } else {
-      // error message
       return res.status(401).json({
         success: 0,
-        message: "invalid id or password",
+        message: "Invalid email or password",
       });
     }
-  });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "An error occurred" });
+  }
 };
 
 const register = async (req, res) => {
@@ -117,8 +127,6 @@ const sendEmail = async (toEmail, password, userId) => {
   }
 };
 const resetPassword = async (req, res) => {
-  const { id, token } = req.params;
-  const { password } = req.body;
   console.log(id, token);
   try {
     const validUser = await User.findOne({ _id: id, verifyToken: token });

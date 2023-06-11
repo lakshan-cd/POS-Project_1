@@ -27,6 +27,7 @@ const Login = () => {
           timer: 1200,
           width: "250px",
         });
+        console.log(response);
         if (response.data.results.user_role === "admin") {
           history("/AddUsers");
         } else if (response.data.results.user_role === "storekeeper") {
@@ -60,7 +61,7 @@ const Login = () => {
           <form className="login-form">
             {" "}
             {/*onSubmit={this.handleSubmit} */}
-            <label htmlfor="email">Email</label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               placeholder="Enter your Email Address"
@@ -70,7 +71,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             ></input>
-            <label htmlfor="password">password</label>
+            <label htmlFor="password">password</label>
             <input
               type="password"
               placeholder="Enter your password"
