@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
 router.post("/login", logIn);
 router.post("/register", register);
 router.post("/sendEmail", sendEmail);
-router.get("/reset/:id/:token", resetPassword);
+router.post("/reset/:id/:token", resetPassword);
 // router.post();
 
 module.exports = router;

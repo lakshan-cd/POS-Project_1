@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "csk8@neeS",
+    "password": "12345678",
     "database": "bypos_db",
     "host": "localhost",
     "dialect": "mysql"

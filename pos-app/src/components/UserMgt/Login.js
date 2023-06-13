@@ -56,7 +56,7 @@ const Login = () => {
 
       <div className="split App">
         <div className="auth-form-container">
-          <h1>Signup</h1>
+          <h1>SignIn</h1>
 
           <form className="login-form">
             {" "}

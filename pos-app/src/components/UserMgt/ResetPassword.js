@@ -6,30 +6,48 @@ import "./ResetPassword.css";
 import Swal from "sweetalert2";
 
 const ResetPassword = () => {
-  const { userId, resetToken } = useParams();
+  // const { userId, resetToken } = useParams();
+  const { id, token } = useParams();
   const history = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+const [error,setError]=useState("error");
 
+  console.log(id);
+  console.log(token);
+  console.log(confirmPassword);
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      if (password !== confirmPassword) {
+      if (password != confirmPassword) {
         // Password and confirm password do not match
         Swal.fire("Error", "Passwords do not match", "error");
         return;
       }
 
-      const response = await axios.get(`/api/reset/${userId}/${resetToken}`, {
-        user_password: password,
+      const response = await axios.post(`http://localhost:3001/users/reset/${id}/${token}`, {
+        new_password: password,
       });
-      const data = response.data;
-      console.log(data);
+      if (response.status == 200){
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          text: "password reset successfully",
+          showConfirmButton: false,
+          timer: 1200,
+          width: "250px",
+        }).then(() => {
+          // Redirect to the login page
+          history("/");
+        });
+      }
+      console.log(response.status);
+      console.log( password);
       // Handle the response from the API
       // Display success or error message to the user
     } catch (error) {
       console.log(error);
-      // Handle the error
+    
     }
   };
 

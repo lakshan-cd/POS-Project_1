@@ -3,6 +3,7 @@ import "./UserForm.css";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 function UserForm() {
   const [fullName, setFullName] = useState("");
@@ -11,6 +12,8 @@ function UserForm() {
   const [mobileNo, setMobileNo] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userRole, setUserRole] = useState("");
+  const [error,setError]=useState("error");
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,9 +31,45 @@ function UserForm() {
         }
       );
 
-      console.log(response.data); // Handle the response data as needed
+      if (response.status === 200) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          text: "User added Successfully",
+          showConfirmButton: false,
+          timer: 1200,
+          width: "250px",
+        }).then(() => {
+          // window.location.reload(); // Refresh the page
+          setFullName("");
+          setAddress("");
+          setEmail("");
+          setMobileNo("");
+          setUserRole("");
+          setUserPassword("");
+        });
+      }
+
+      console.log(response); // Handle the response data as needed
+    
     } catch (error) {
-      console.error(error); // Handle the error as needed
+
+      if (error.response && error.response.status === 400) {
+        setError(error.response.data.error); // Set the error message from the response
+        // Swal.fire("Error", error.response.data.error, "error");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          text: (error.response.data.error),
+          showConfirmButton: false,
+          timer: 1200,
+          width: "250px",
+        })
+      } else {
+        setError("An error occurred"); // Set a generic error message
+      }
+      console.log("email error: ", error);
+      // console.error(error); // Handle the error as needed
     }
   };
   const initialValues = {
