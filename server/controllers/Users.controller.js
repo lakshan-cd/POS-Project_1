@@ -48,6 +48,45 @@ const logIn = async (req, res) => {
   }
 };
 
+//function for add user
+
+// const register = async (req, res) => {
+//   try {
+//     const { full_name, address, email, mobile_no, user_password } = req.body;
+//     let { user_role } = req.body;
+//     if (
+//       user_role !== "cashier" &&
+//       user_role !== "storekeeper" &&
+//       user_role !== "admin"
+//     ) {
+//       return res.status(400).json({ error: "Invalid user role" });
+//     }
+//     // Encrypt the password
+//     const encryptedPassword = await bcrypt.hash(user_password, 10);
+    
+  
+//     // Create the user in the database
+//     const user = await Users.create({
+//       full_name,
+//       address,
+//       email,
+//       mobile_no,
+//       user_role,
+//       user_password: encryptedPassword, // Store the encrypted password
+//     });
+
+//     sendEmail(email, user_password, user.id);
+//     console.log(user.id);
+//     // Pass the user ID to sendEmail function
+//     return res
+//       .status(200)
+//       .json({ message: "User registered successfully", user });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "An error occurred" });
+//   }
+// };
+
 const register = async (req, res) => {
   try {
     const { full_name, address, email, mobile_no, user_password } = req.body;
@@ -58,6 +97,11 @@ const register = async (req, res) => {
       user_role !== "admin"
     ) {
       return res.status(400).json({ error: "Invalid user role" });
+    }
+    // Check if email already exists
+    const existingUser = await Users.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already exists" });
     }
     // Encrypt the password
     const encryptedPassword = await bcrypt.hash(user_password, 10);
@@ -84,6 +128,10 @@ const register = async (req, res) => {
   }
 };
 
+
+
+
+//email sending function
 const sendEmail = async (toEmail, password, userId) => {
   try {
     // Generate a token for password reset link
@@ -126,14 +174,42 @@ const sendEmail = async (toEmail, password, userId) => {
     // Handle the error here, such as logging it or returning an error response
   }
 };
+// const resetPassword = async (req, res) => {
+//   console.log(id, token);
+//   try {
+//     const validUser = await Users.findOne({ _id: id, verifyToken: token });
+//     const verifyToken = jwt.verify(token, process.env.SECRET);
+//     if (validUser && verifyToken._id) {
+//       const hashedPassword = await bcrypt.hash(password, 12);
+//       validUser.password = hashedPassword;
+//       await validUser.save();
+//       res.status(200).json({
+//         message: "Password updated successfully",
+//         hashedPassword: hashedPassword,
+//       });
+//     } else {
+//       res.status(401).json({ message: "Invalid user or token" });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: "An error occurred" });
+//   }
+// };
+
 const resetPassword = async (req, res) => {
+  const { id, token } = req.params; // Retrieve id and token from request parameters
+  const { new_password } = req.body; // Retrieve password from request body
+
   console.log(id, token);
+  console.log(new_password);
+  
   try {
-    const validUser = await User.findOne({ _id: id, verifyToken: token });
     const verifyToken = jwt.verify(token, process.env.SECRET);
-    if (validUser && verifyToken._id) {
-      const hashedPassword = await bcrypt.hash(password, 12);
-      validUser.password = hashedPassword;
+    console.log(verifyToken);
+    const validUser = await Users.findOne({ where: {id: verifyToken.userId}});
+    console.log(validUser);
+    if (validUser && verifyToken.userId) {
+      const hashedPassword = await bcrypt.hash(new_password, 12);
+      validUser.user_password = hashedPassword;
       await validUser.save();
       res.status(200).json({
         message: "Password updated successfully",
@@ -146,5 +222,33 @@ const resetPassword = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
+
+// const resetPassword = async (req, res) => {
+//   const { id, token } = req.params; // Retrieve id and token from request parameters
+//   const { password } = req.body; // Retrieve password from request body
+
+//   console.log(id, token);
+
+//   try {
+//     const validUser = await Users.findOne({ _id: id, verifyToken: token });
+//     if (validUser) {
+//       // Token is valid, update the password
+//       const hashedPassword = await bcrypt.hash(password, 12);
+//       validUser.password = hashedPassword;
+//       validUser.verifyToken = null; // Clear the verify token
+//       await validUser.save();
+
+//       res.status(200).json({
+//         message: "Password updated successfully",
+//         hashedPassword: hashedPassword,
+//       });
+//     } else {
+//       res.status(401).json({ message: "Invalid user or token" });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: "An error occurred" });
+//   }
+// };
 
 module.exports = { logIn, register, sendEmail, resetPassword };
